@@ -80,7 +80,7 @@
   "T19": { "name": "平針", "line_id": "T" },
   "T20": { "name": "赤池", "line_id": "T" },
 
-  "S01": { "name": "中村区役所", "line_id": "S" },
+  "S01": { "name": "太閤通", "line_id": "S" },
   "S02": { "name": "名古屋", "line_id": "S" },
   "S03": { "name": "国際センター", "line_id": "S", "special_node_type": "KOKUSAI" },
   "S04": { "name": "丸の内", "line_id": "S" },
