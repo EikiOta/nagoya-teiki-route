@@ -15,7 +15,8 @@ export const findRoutes = function (startNodeId: string, endNodeId: string): str
     const results: string[][] = [];
     // 再帰(繰り返し)関数
     // ゴール(endNodeId)は固定なので引数として渡さなくても参照できる。他方でスタート位置は都度変わる（再帰時の現在地によって）ため引数として渡す（変数化）する必要がある。
-    const findPathsRecursive = function(currentNodeId: string, currentPath: string[], visitedNodes: Set<string>) :void {
+    // transferCount: 乗り換え回数(3回以下の縛り)
+    const findPathsRecursive = function(currentNodeId: string, currentPath: string[], visitedNodes: Set<string>, transferCount: number) :void {
         // 今いる駅がゴール駅に到達した場合(到着のチェック)
         if(currentNodeId == endNodeId){
             const copiedCurrentPath : string[] = [...currentPath];// 現在のパスを一旦コピー配列にコピーする。（コピーしないと都度更新されてしまいまずい)
@@ -24,6 +25,10 @@ export const findRoutes = function (startNodeId: string, endNodeId: string): str
         // 非到着の場合
         const neighbors : Connection[] = (adjacencyList as Record<string, Connection[]>)[currentNodeId] ; // 現在いる駅の隣接するノードをneighborsに格納。as以下は型アサーションでtsエラー回避)
         for(const neighbor of neighbors){// 現在いる駅の隣接ノードを順番に全て回す
+            /*選択中の隣接ノードが乗り換え(transfer)で、乗り換え回数が3回（上限に達している)の場合 */
+            if(neighbor.type == "transfer" && transferCount == 3){
+                continue;// これ以上乗り換えできないためスキップする
+            }
             if(visitedNodes.has(neighbor.node_id)){// visitedNodesにneighbor.node_idがある（つまり既に訪れていた場合)
                 continue;// スキップ
             }
@@ -33,13 +38,19 @@ export const findRoutes = function (startNodeId: string, endNodeId: string): str
 
             const copiedVisitedNodes = new Set(visitedNodes);// 現在の訪れたリスト配列をコピーする
             copiedVisitedNodes.add(neighbor.node_id);// 今持っているneighbor.node_idは訪れた扱いになるので、コピーした訪れたリスト配列に追加
-            findPathsRecursive(neighbor.node_id, copiedCurrentPath, copiedVisitedNodes);// 再帰呼び出し
+            let newTransferCount : number = transferCount;// プリミティブ型は代入でも値渡しなので、互いに紐づけされない。
+            /* 乗り換えノードの場合は、乗り換え扱いとしてインクリメント */
+            if(neighbor.type == "transfer"){
+                newTransferCount++;// インクリメント
+            }
+            findPathsRecursive(neighbor.node_id, copiedCurrentPath, copiedVisitedNodes, newTransferCount);// 再帰呼び出し
         }
 
 
     };
     // 最初の呼び出し
     // currentNodeId: 最初の位置(startNodeId), currentPath: 最初の位置しか訪れていないので配列化した[startNodeId], visitedNodes: 同じく最初のノードしか訪れていないのでnew Setで[startNodeId]だけ格納
-    findPathsRecursive(startNodeId, [startNodeId], new Set([startNodeId]));
+    // transferCount: 初期は当然累計乗り換え回数0回
+    findPathsRecursive(startNodeId, [startNodeId], new Set([startNodeId]), 0);
     return results;
 }
