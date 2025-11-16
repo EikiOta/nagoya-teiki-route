@@ -11,7 +11,7 @@ type StationInfo = {
 };
 
 
-// ちゃんと読み込めているかコンソールで確認
+
 // console.log('名古屋駅の情報:', stations.H08);
 // console.log('名古屋駅の接続先:', adjacencyList.H08);
 // console.log('東山線の名前:', lines.H);
