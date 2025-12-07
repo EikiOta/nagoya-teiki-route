@@ -1,3 +1,5 @@
+// src\core\routeFinder.ts
+
 // --- データをインポート ---
 import stations from '../data/stations.json';
 import adjacencyList from '../data/adjacency_list.json';
