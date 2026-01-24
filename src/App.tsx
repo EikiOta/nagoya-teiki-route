@@ -1,10 +1,13 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import './core/routeFinder.ts';
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+import "./App.css";
+import "./core/routeFinder.ts";
+import "./core/shortestPath.ts";
+import { findShortestPath } from "./core/shortestPath.ts";
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
+  findShortestPath("H07", "H10");
 
   return (
     <>
@@ -29,7 +32,7 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
