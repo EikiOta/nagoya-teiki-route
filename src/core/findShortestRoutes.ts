@@ -28,6 +28,7 @@ export const getLinerPath = (startNodeId: string, endNodeId: string):string[] =>
   const pathArr: string[] = [];
   let nowNodeId:string = "";
   pathArr.push(startNodeId);
+  const judgeDir:boolean = isForwardDirection(startNodeId, endNodeId); // 順方向 -> true, 逆方向-> false
   /* 末端ノード */
   if(adjacencyList[startNodeId].length == 1){
     pathArr.push(getNextNode(startNodeId)[0]);// [H01, H02]
@@ -45,4 +46,21 @@ export const getLinerPath = (startNodeId: string, endNodeId: string):string[] =>
    //pathArr.push(adjacencyList[startNodeId][1].node_id);
    }
    return pathArr;
+}
+/* 順方向(true), 逆方向(false)を特定する関数 ※ */
+export const isForwardDirection =(startNodeId, endNodeId): boolean => {
+  const intStartNodeId: number = stringNodeToIntNode(startNodeId);// 6
+  const intEndNodeId: number = stringNodeToIntNode(endNodeId);// 2
+  if(intStartNodeId <= intEndNodeId){
+    return true;
+  }else{
+    return false;
+  }
+}
+
+/* nodeId(例: "H05")を数字(例: 5)に変換する関数 */
+const stringNodeToIntNode = (nodeId: string): number => {
+  const slicedNodeId: string = nodeId.slice(1);
+  const intNodeId: number = Number(slicedNodeId);
+  return intNodeId;
 }
