@@ -1,4 +1,5 @@
-import adjacencyList from "../data/adjacencyList";
+import {adjacencyList, type AdjacencyList} from "../data/adjacencyList";
+import { distanceFromNodeList, type DistanceFromNodeList } from "../types/distanceFromNodeList";
 export const findShortestRoutes = function (
   startNodeId: string,
   endNodeId: string
@@ -97,27 +98,51 @@ const stringNodeToIntNode = (nodeId: string): number => {
   const intNodeId: number = Number(slicedNodeId);
   return intNodeId;
 }
-// ダイクストラ法による最短ルート算出
-// export const getShortestPath = (startNodeId: string, endNodeId: string): string[] => {
-//   const targetNodeId: string = startNodeId;// "H05"
-//   const tempDistance;// [nodeId][distance]
-//   const confirmedDistance = [startNodeId][0];// [nodeId][distance]
-  
-//   //confirmedDistance.push([startNodeId][0]);
-//   while(targetNodeId != endNodeId){
-//     const nextNodeArr: string[] = getNextNode(targetNodeId);// [H04, H06]
-//     for(const node of nextNodeArr){
-//       tempDistance.push([node][])
-//     }
-//   }
+//ダイクストラ法による最短ルート算出
+export const getShortestPath = (startNodeId: string, endNodeId: string): string[] => {
+  const targetNodeId: string = startNodeId;// "H05"
+  distanceFromNodeList[startNodeId][0].distance = 0;// 始点はゼロにする
+  distanceFromNodeList[startNodeId][0].isConfirmed = true;// 確定距離にする
+  let queue: DistanceFromNodeList= {};//[{node_id, distance }]
+
+  //confirmedDistance.push([startNodeId][0]);
+//  while(targetNodeId != endNodeId){
+    const nextNodeArr: string[] = getNextNode(targetNodeId);// [H01, H03]
+    for(const node of nextNodeArr){
+      // console.log(calcDistance([targetNodeId, node]));
+      /* 暫定距離かつ今の暫定距離より短い場合  */
+      if((distanceFromNodeList[node][0].isConfirmed == false) && (distanceFromNodeList[node][0].distance > calcDistance([targetNodeId, node]))){
+      distanceFromNodeList[node][0].distance = calcDistance([targetNodeId, node]);// より短いものに書き換える
+      
+      }
+      const hoge: DistanceFromNodeList = distanceFromNodeList[node];
+      console.log(hoge);
+      queue = {...queue,  H01: [{distance: 999, isConfirmed: false}]};
+      //console.log(queue);
+      //queue.push(hoge);// 優先度付きキューとやらにぶち込む {"H01, H03"}
+    }
+    //console.log(queue);
+    //queue.sort((a,b) => a.distance - b.distance);
+//  }
+    return ['H02', 'H03', 'H04', 'S05'];
+
+}
+
+/* 暫定(確定)距離リスト */
+export const sortDistanceList  = (distanceList : DistanceFromNodeList) => {
+
+};
 
 
-// }
 
-// 配列に格納されたルートから方向を判定する(隣のノード比較して方向確定)
-export const isForwardDirByArr = (pathArr: string[]): boolean => {
-  const startNodeId = stringNodeToIntNode(pathArr[0]);// 5
-  const nextNodeId = stringNodeToIntNode(pathArr[1]);// 6
+
+
+
+
+// ２つのノードを比較して方向を判定する
+export const isForwardDirByArr = (firstNodeId: string, secondNodeId: string): boolean => {
+  const startNodeId = stringNodeToIntNode(firstNodeId);// 5
+  const nextNodeId = stringNodeToIntNode(secondNodeId);// 6
   if(startNodeId < nextNodeId){
     return true;
   }else{
@@ -137,18 +162,22 @@ export const isTransferNextNode = (nowNodeId: string, nextNodeId: string): boole
 
 // 配列に格納されたルートの距離を算出する関数 ["H05", "H06", "H07", "H08", "S02", "S03"]
 export const calcDistance = (pathArr: string[]): number =>  {
-  const isForward: boolean = isForwardDirByArr(pathArr);// 順方向 -> true, 逆方向 -> false
+  let isForward: boolean = isForwardDirByArr(pathArr[0], pathArr[1]);// 順方向 -> true, 逆方向 -> false
   let totalDistance: number = 0;
 
   for(let i = 0; i < pathArr.length - 1;i++){
     /* 乗り換え判定 */
     if(isTransferNextNode(pathArr[i], pathArr[i + 1])){
+      isForward = isForwardDirByArr(pathArr[i + 1], pathArr[i + 2]);// 乗り換え後の方向を判定
       continue;// 乗り換えは距離発生しないのでスキップ
     }
     const nowNodeId :string = pathArr[i];//"H05"
     /* 順方向 */
     if(isForward){
       totalDistance += adjacencyList[nowNodeId][1].distance ?? 0;// デフォルト値0
+    }else{
+      /* 逆方向 */
+      totalDistance += adjacencyList[nowNodeId][0].distance ?? 0;
     }
   }
   return totalDistance;

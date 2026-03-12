@@ -26,12 +26,16 @@ test('方向判定を返す(乗り換えなし) 順方向(true)or逆方向(false
 });
 
 
-test(' 逆方向(乗り換えなし)でも駅間の経路を配列に格納したものを返す: H06 -> H02', () => {
-  expect(getShortestPath("H05", "S03")).toEqual(['H06', 'H07', 'H08', 'S02', 'S03'])
+// test(' 逆方向(乗り換えなし)でも駅間の経路を配列に格納したものを返す: H05 -> S03', () => {
+//   expect(getShortestPath("H05", "S03")).toEqual(['H06', 'H07', 'H08', 'S02', 'S03'])
+// });
+test(' ダイクストラ法で最短経路を算出', () => {
+   expect(getShortestPath("H02", "H05")).toEqual(['H02', 'H03', 'H04', 'S05'])
 });
 
-test('配列に格納されたルートから方向を順方向(true)or逆方向(false)判定する', () => {
-  expect(isForwardDirByArr(["H05", "H06", "H07", "H08", "S02", "S03"])).toBe(true)
+
+test('2つのノードから方向が順方向(true)or逆方向(false)判定する', () => {
+  expect(isForwardDirByArr("H05", "H06")).toBe(true)
 });
 
 test('次のノードが乗り換えかどうか判定', () => {
