@@ -2,7 +2,7 @@
 //     [key:string]: number;// ex: "H06: 0.8"
 //     isConfirmed: string;// true-> 確定距離, false -> 暫定距離
 // }
-export interface DistanceFromNodeList {
+export type DistanceFromNodeList  = {
   [key: string]: Array<{
     distance: number;// 始点からの距離(デフォルトは999)
     isConfirmed: boolean;// true: 確定距離, false: 暫定距離

@@ -6,7 +6,7 @@ import { isForwardDirByArr } from './findShortestRoutes';
 import { isTransferNextNode } from './findShortestRoutes';
 import { calcDistance } from './findShortestRoutes';
 import { test } from "vitest";
-
+import { sortDistanceList } from './findShortestRoutes';
 test('隣の駅番号を返す: H01 → H02', () => {
   expect(getNextNode("H01")).toEqual(["H02"])
 });
@@ -48,3 +48,16 @@ test('配列に格納されたルートの距離を算出する関数 H05 -> S03
 test('配列に格納されたルートの距離を算出する. ただし乗り換え後進行方向方向逆転 H07 -> T05', () => {
   expect(calcDistance(["H07", "H08", "H09", "T07", "T06", "T05"])).toEqual(4.5)
 });
+
+test('queueを暫定距離(distance)が短い順にソートする関数 ', () => {
+  expect(sortDistanceList({
+  H01: { distance: 0.9, isConfirmed: false },
+  H03: { distance: 1.1, isConfirmed: false },
+  H04: { distance: 0.2, isConfirmed: false },
+  H05: { distance: 0.5, isConfirmed: false }
+})).toEqual({
+  H04: { distance: 0.2, isConfirmed: false },
+  H05: { distance: 0.5, isConfirmed: false },
+  H01: { distance: 0.9, isConfirmed: false },
+  H03: { distance: 1.1, isConfirmed: false }
+})});
