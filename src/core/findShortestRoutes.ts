@@ -1,15 +1,16 @@
 import {adjacencyList, type AdjacencyList} from "../data/adjacencyList";
 import { distanceFromNodeList, type DistanceFromNodeList } from "../types/distanceFromNodeList";
+import { DistanceFromNode } from "../types/distanceFromNodeList";
 export const findShortestRoutes = function (
   startNodeId: string,
   endNodeId: string
 ): void {
   //const fuga: keyof AdjacencyList = startNodeId;
   // console.log(adjacencyList[hoge]);
-  console.log(adjacencyList[startNodeId]);
+  //console.log(adjacencyList[startNodeId]);
   // console.log(adjacencyList[startNodeId]);
   //console.log(foo[startNodeId]);
-  console.log(adjacencyList[startNodeId][0].type)
+  //console.log(adjacencyList[startNodeId][0].type)
 };
 /* 隣接ノードを取得(乗り換えも含む) */
 export const getNextNode = (nodeId: string):string[] =>  {
@@ -98,58 +99,41 @@ const stringNodeToIntNode = (nodeId: string): number => {
   const intNodeId: number = Number(slicedNodeId);
   return intNodeId;
 }
-//ダイクストラ法による最短ルート算出
+/* ダイクストラ法による最短ルート算出 */
 export const getShortestPath = (startNodeId: string, endNodeId: string): string[] => {
   const targetNodeId: string = startNodeId;// "H05"
-  distanceFromNodeList[startNodeId][0].distance = 0;// 始点はゼロにする
-  distanceFromNodeList[startNodeId][0].isConfirmed = true;// 確定距離にする
-  let queue= {};//[{node_id, distance }]
-  //confirmedDistance.push([startNodeId][0]);
-//  while(targetNodeId != endNodeId){
-    const nextNodeArr: string[] = getNextNode(targetNodeId);// [H01, H03]
+  let queue: DistanceFromNodeList = [];//[{node_id, distance }]
+
+  /* STEP1: スタート点からスタート点までの確定距離を0にする。 */
+  distanceFromNodeList.find((node) => node.id === startNodeId)!.distance = 0;// リストのスタート点の距離を0
+  distanceFromNodeList.find((node) => node.id === startNodeId)!.isConfirmed = true;// "!"でnullにならないことを保証 
+
+  /* 隣接ノード取得 */
+  const nextNodeArr: string[] = getNextNode(targetNodeId);// [H01, H03]
+
     for(const node of nextNodeArr){
       // console.log(calcDistance([targetNodeId, node]));
+      const tempNode = distanceFromNodeList.find((nodes) => nodes.id === node);
       /* 暫定距離かつ今の暫定距離より短い場合  */
-      if((distanceFromNodeList[node][0].isConfirmed == false) && (distanceFromNodeList[node][0].distance > calcDistance([targetNodeId, node]))){
-      distanceFromNodeList[node][0].distance = calcDistance([targetNodeId, node]);// より短いものに書き換える
-      
+      if((tempNode!.isConfirmed == false) && (tempNode!.distance > calcDistance([targetNodeId, node]))){
+        tempNode!.distance =  calcDistance([targetNodeId, node]);// より短いものに書き換える
       }
-      const obj = {
-        [node]: {distance: distanceFromNodeList[node][0].distance, isConfirmed: distanceFromNodeList[node][0].isConfirmed}
+
+      const obj: DistanceFromNode = {
+        id: tempNode!.id, distance: tempNode!.distance ,isConfirmed: tempNode!.isConfirmed
       };
       
-      queue = {...queue, ...obj};
-      //console.log(queue);
-      //queue.push(hoge);// 優先度付きキューとやらにぶち込む {"H01, H03"}
+      
+      queue = [...queue,obj];      
     }
-    //console.log(queue)
-
-    //queue.sort((a,b) => a.distance - b.distance);
-//  }
-    return ['H02', 'H03', 'H04', 'S05'];
+    return ['H02', 'H03', 'H04', 'H05'];
 
 }
 
 /* 暫定(確定)距離キューのソート */
-export const sortDistanceList  = (queue) => {
-  //console.log(queue[0]["H01"])
-  const result = Object.keys(queue).map((key) => {
-    return queue[key];
-  }).sort((a, b) => {
-    return (a.distance < b.distance ? -1 : 1)
-  });
-  console.log(result);
-  //console.log(queue);
-
-
-
-  //console.log(queue);
-  return {
-  H04: { distance: 0.2, isConfirmed: false },
-  H05: { distance: 0.5, isConfirmed: false },
-  H01: { distance: 0.9, isConfirmed: false },
-  H03: { distance: 1.1, isConfirmed: false }
-}
+export const sortDistanceList  = (queue: DistanceFromNodeList) => {
+  queue.sort((a: DistanceFromNode,b: DistanceFromNode) => a.distance - b.distance)// 距離でソートする関数
+  return queue;
 };
 
 

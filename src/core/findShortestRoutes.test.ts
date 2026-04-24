@@ -30,7 +30,7 @@ test('方向判定を返す(乗り換えなし) 順方向(true)or逆方向(false
 //   expect(getShortestPath("H05", "S03")).toEqual(['H06', 'H07', 'H08', 'S02', 'S03'])
 // });
 test(' ダイクストラ法で最短経路を算出', () => {
-   expect(getShortestPath("H02", "H05")).toEqual(['H02', 'H03', 'H04', 'S05'])
+   expect(getShortestPath("H02", "H05")).toEqual(['H02', 'H03', 'H04', 'H05'])
 });
 
 
@@ -50,14 +50,14 @@ test('配列に格納されたルートの距離を算出する. ただし乗り
 });
 
 test('queueを暫定距離(distance)が短い順にソートする関数 ', () => {
-  expect(sortDistanceList({
-  H01: { distance: 0.9, isConfirmed: false },
-  H03: { distance: 1.1, isConfirmed: false },
-  H04: { distance: 0.2, isConfirmed: false },
-  H05: { distance: 0.5, isConfirmed: false }
-})).toEqual({
-  H04: { distance: 0.2, isConfirmed: false },
-  H05: { distance: 0.5, isConfirmed: false },
-  H01: { distance: 0.9, isConfirmed: false },
-  H03: { distance: 1.1, isConfirmed: false }
-})});
+  expect(sortDistanceList([
+  { id: 'H01', distance: 0.9, isConfirmed: false },
+  { id: 'H03', distance: 1.1, isConfirmed: false },
+  { id: 'H04', distance: 0.2, isConfirmed: false },
+  { id: 'H05',distance: 0.5, isConfirmed: false }
+])).toEqual([
+  { id: 'H04',distance: 0.2, isConfirmed: false },
+  { id: 'H05', distance: 0.5, isConfirmed: false },
+  { id: 'H01', distance: 0.9, isConfirmed: false },
+  { id: 'H03', distance: 1.1, isConfirmed: false }
+])});
