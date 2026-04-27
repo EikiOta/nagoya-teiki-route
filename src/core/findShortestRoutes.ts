@@ -101,36 +101,56 @@ const stringNodeToIntNode = (nodeId: string): number => {
 }
 /* ダイクストラ法による最短ルート算出 */
 export const getShortestPath = (startNodeId: string, endNodeId: string): string[] => {
+
   const targetNodeId: string = startNodeId;// "H05"
-  let queue: DistanceFromNodeList = [];//[{node_id, distance }]
+  let queue: DistanceFromNodeList = [];//[{node_id, distance }] // queueは次の確定距離候補になる暫定距離のリスト。
 
   /* STEP1: スタート点からスタート点までの確定距離を0にする。 */
-  distanceFromNodeList.find((node) => node.id === startNodeId)!.distance = 0;// リストのスタート点の距離を0
+  distanceFromNodeList.find((node) => node.id === startNodeId)!.distance = 0;// リストのスタート点の距離を0(自明)
   distanceFromNodeList.find((node) => node.id === startNodeId)!.isConfirmed = true;// "!"でnullにならないことを保証 
-
+  
   /* 隣接ノード取得 */
   const nextNodeArr: string[] = getNextNode(targetNodeId);// [H01, H03]
+  /* targetNodeIdの確定距離。(たどる元の距離）＋（辺に示された距離)の「たどる元の距離」にあたる */
+  const targetNodeIdDist: number = distanceFromNodeList.find((node) => node.id === targetNodeId)!.distance;
 
     for(const node of nextNodeArr){
       // console.log(calcDistance([targetNodeId, node]));
-      const tempNode = distanceFromNodeList.find((nodes) => nodes.id === node);
-      /* 暫定距離かつ今の暫定距離より短い場合  */
-      if((tempNode!.isConfirmed == false) && (tempNode!.distance > calcDistance([targetNodeId, node]))){
-        tempNode!.distance =  calcDistance([targetNodeId, node]);// より短いものに書き換える
+      const tempNode = distanceFromNodeList.find((nodes) => nodes.id === node);// ノードのオブジェクト取得
+      
+      /* 隣接ノードがすでにqueueにあるかの真偽値(true: ある、false: ない) */
+      const isAddedQueue: boolean = distanceFromNodeList.some((nodes) => nodes.id === node);
+      /* 隣接ノードが暫定距離かつqueueにすでにある暫定距離より短い場合(ない場合はちゃんと0になるのか？)  */
+      if(tempNode!.isConfirmed == false){
+        /* ①: queueにない場合 ②queueにあるが、今のルート(targetNodeIdDist + calcDistance)の方が既存(distanceFromNodeList)より短い場合 */
+        // if((!isAddedQueue) || (isAddedQueue && (targetNodeIdDist + calcDistance([targetNodeId, node]) < tempNode!.distance/*listのすでにある距離、初期でも999だから流用できる？*/ ))){
+        //   tempNode!.distance =  calcDistance([targetNodeId, node]);// より短いものに更新
+        // }
+        /* ①: queueにない場合 */
+        if(!isAddedQueue){
+          tempNode!.distance =  calcDistance([targetNodeId, node]);// より短いものに更新
+          //distanceFromNodeList.find((nodes) => nodes.id === node)!.distance = 0;// tempNodeをいじった時点でlistも更新される？
+          /* 更新したobjをqueueに追加するためのobj */
+          const obj: DistanceFromNode = {
+          id: tempNode!.id, distance: tempNode!.distance ,isConfirmed: tempNode!.isConfirmed
+          };
+          /* queueに新規追加する */
+          queue = [...queue,obj]; 
+        /* ②: queueにあるが、今のルート(targetNodeIdDist + calcDistance)の方が既存(distanceFromNodeList)より短い場合 */
+        }else if(isAddedQueue && (targetNodeIdDist + calcDistance([targetNodeId, node]) < tempNode!.distance )){
+          tempNode!.distance =  calcDistance([targetNodeId, node]);// より短いものに更新
+          queue.find((nodes) => nodes.id == node)!.distance = tempNode!.distance;// queueの暫定距離も短い方に更新する
       }
-
-      const obj: DistanceFromNode = {
-        id: tempNode!.id, distance: tempNode!.distance ,isConfirmed: tempNode!.isConfirmed
-      };
-      
-      
-      queue = [...queue,obj];      
+      queue = sortDistanceList(queue);// 暫定距離を昇順でソートする
+      /* STEP3 暫定距離のリストの中で一番短いものを確定距離にする */
+      queue[0].isConfirmed = true;
     }
     return ['H02', 'H03', 'H04', 'H05'];
 
 }
+}
 
-/* 暫定(確定)距離キューのソート */
+/* 暫定距離キューのソート */
 export const sortDistanceList  = (queue: DistanceFromNodeList) => {
   queue.sort((a: DistanceFromNode,b: DistanceFromNode) => a.distance - b.distance)// 距離でソートする関数
   return queue;
