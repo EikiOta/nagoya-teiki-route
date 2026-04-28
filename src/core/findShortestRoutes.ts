@@ -100,65 +100,75 @@ const stringNodeToIntNode = (nodeId: string): number => {
   return intNodeId;
 }
 /* ダイクストラ法による最短ルート算出 */
-export const getShortestPath = (startNodeId: string, endNodeId: string): string[] => {
+export const dijkstra = (startNodeId: string, endNodeId: string): string[] => {
 
-  const targetNodeId: string = startNodeId;// "H05"
-  let queue: DistanceFromNodeList = [];//[{node_id, distance }] // queueは次の確定距離候補になる暫定距離のリスト。
+  let targetNodeId: string = startNodeId;// "H05"
+  //let queue: DistanceFromNodeList = [];//[{node_id, distance }] // queueは次の確定距離候補になる暫定距離のリスト。
 
   /* STEP1: スタート点からスタート点までの確定距離を0にする。 */
   distanceFromNodeList.find((node) => node.id === startNodeId)!.distance = 0;// リストのスタート点の距離を0(自明)
   distanceFromNodeList.find((node) => node.id === startNodeId)!.isConfirmed = true;// "!"でnullにならないことを保証 
-  
+  /* 駅距離リストに未確定ノードがある限り回す */
+  while(!isAllNodeOfListConfirmed(distanceFromNodeList)){
   /* 隣接ノード取得 */
   const nextNodeArr: string[] = getNextNode(targetNodeId);// [H01, H03]
   /* targetNodeIdの確定距離。(たどる元の距離）＋（辺に示された距離)の「たどる元の距離」にあたる */
   const targetNodeIdDist: number = distanceFromNodeList.find((node) => node.id === targetNodeId)!.distance;
-
+    /* STEP2 確定距離の点と隣接点を精査して、短ければ上書き */
     for(const node of nextNodeArr){
       // console.log(calcDistance([targetNodeId, node]));
       const tempNode = distanceFromNodeList.find((nodes) => nodes.id === node);// ノードのオブジェクト取得
+            //const isAddedQueue: boolean = distanceFromNodeList.some((nodes) => nodes.id === node);
       
-      /* 隣接ノードがすでにqueueにあるかの真偽値(true: ある、false: ない) */
-      const isAddedQueue: boolean = distanceFromNodeList.some((nodes) => nodes.id === node);
       /* 隣接ノードが暫定距離かつqueueにすでにある暫定距離より短い場合(ない場合はちゃんと0になるのか？)  */
-      if(tempNode!.isConfirmed == false){
-        /* ①: queueにない場合 ②queueにあるが、今のルート(targetNodeIdDist + calcDistance)の方が既存(distanceFromNodeList)より短い場合 */
-        // if((!isAddedQueue) || (isAddedQueue && (targetNodeIdDist + calcDistance([targetNodeId, node]) < tempNode!.distance/*listのすでにある距離、初期でも999だから流用できる？*/ ))){
-        //   tempNode!.distance =  calcDistance([targetNodeId, node]);// より短いものに更新
-        // }
-        /* ①: queueにない場合 */
-        if(!isAddedQueue){
-          tempNode!.distance =  calcDistance([targetNodeId, node]);// より短いものに更新
-          //distanceFromNodeList.find((nodes) => nodes.id === node)!.distance = 0;// tempNodeをいじった時点でlistも更新される？
-          /* 更新したobjをqueueに追加するためのobj */
-          const obj: DistanceFromNode = {
-          id: tempNode!.id, distance: tempNode!.distance ,isConfirmed: tempNode!.isConfirmed
-          };
-          /* queueに新規追加する */
-          queue = [...queue,obj]; 
-        /* ②: queueにあるが、今のルート(targetNodeIdDist + calcDistance)の方が既存(distanceFromNodeList)より短い場合 */
-        }else if(isAddedQueue && (targetNodeIdDist + calcDistance([targetNodeId, node]) < tempNode!.distance )){
-          tempNode!.distance =  calcDistance([targetNodeId, node]);// より短いものに更新
-          queue.find((nodes) => nodes.id == node)!.distance = tempNode!.distance;// queueの暫定距離も短い方に更新する
+      if((tempNode!.isConfirmed == false) && (targetNodeIdDist + calcDistance([targetNodeId, node]) < tempNode!.distance)){
+          tempNode!.distance =  targetNodeIdDist + calcDistance([targetNodeId, node]);// より短いものに更新
+          tempNode!.previousNodeId = targetNodeId;// 辿るノードを保存する(ゴールから後で逆に辿る)
+          console.log("hogehoge")
       }
-      queue = sortDistanceList(queue);// 暫定距離を昇順でソートする
-      /* STEP3 暫定距離のリストの中で一番短いものを確定距離にする */
-      queue[0].isConfirmed = true;
+      /* STEP3: 一番短い暫定距離のものを確定距離にする */
+      const targetUnconfirmedNodeId: string = minIsConfirmed(distanceFromNodeList).id;// 未確定最小ノードid取得
+      distanceFromNodeList.find((node) => node.id === targetUnconfirmedNodeId)!.isConfirmed = true;// 暫定 -> 確定距離に変更
+      targetNodeId = targetUnconfirmedNodeId;// 今確定したノードの隣接を次回ループで探るためtargetに設定
     }
-    return ['H02', 'H03', 'H04', 'H05'];
+  }
+  //console.log(distanceFromNodeList)
+  const shortestArr: string[] = [];
 
-}
+  let tracedNodeId = distanceFromNodeList.find((nodes) => nodes.id === endNodeId)!.previousNodeId;// 
+  //console.log(tracedNodeId);
+
+  while(distanceFromNodeList.find((nodes) => nodes.id === tracedNodeId)!.previousNodeId == null){
+    shortestArr.push(tracedNodeId!);// 入れる(ただし逆順になる)
+    tracedNodeId = distanceFromNodeList.find((nodes) => nodes.id === tracedNodeId)!.previousNodeId;// ノード辿る
+  }
+  shortestArr.reverse();
+
+  return shortestArr;
 }
 
-/* 暫定距離キューのソート */
+/* 暫定距離キューのソート (不使用)*/
 export const sortDistanceList  = (queue: DistanceFromNodeList) => {
   queue.sort((a: DistanceFromNode,b: DistanceFromNode) => a.distance - b.distance)// 距離でソートする関数
   return queue;
 };
 
+/* 現状の駅距離リストから暫定かつ一番短いDistanceFromNodeを返す関数(確定ノードに変えるため) */
+export const minIsConfirmed = (currentList: DistanceFromNodeList) => {
+  const unconfirmedNodeList: DistanceFromNodeList = currentList.filter(({ isConfirmed }) => isConfirmed === false);// 暫定距離のノードリストを生成
+  /* 最短距離のNodeObjを返す関数定義 */
+  const minDistanceFinder = (NodeList: DistanceFromNodeList) => {  return NodeList.reduce((accumulator: DistanceFromNode, currentValue:DistanceFromNode) =>
+    currentValue.distance < accumulator.distance ? currentValue : accumulator
+  );} 
+  const minDistanceNodeObj = minDistanceFinder(unconfirmedNodeList);// 未確定かつ最短距離のobjを取得して代入
 
+  return minDistanceNodeObj;
+}
 
-
+/* 現状のdistanceFromNodeListがすべて確定しているか判定する関数 */
+export const isAllNodeOfListConfirmed = (currentList: DistanceFromNodeList) => {
+  return !currentList.map((node) => node.isConfirmed).includes(false);// 未確定が一つでもあったらfalse, なければtrue(すべて精査判定)
+}
 
 
 
@@ -187,7 +197,6 @@ export const isTransferNextNode = (nowNodeId: string, nextNodeId: string): boole
 export const calcDistance = (pathArr: string[]): number =>  {
   let isForward: boolean = isForwardDirByArr(pathArr[0], pathArr[1]);// 順方向 -> true, 逆方向 -> false
   let totalDistance: number = 0;
-
   for(let i = 0; i < pathArr.length - 1;i++){
     /* 乗り換え判定 */
     if(isTransferNextNode(pathArr[i], pathArr[i + 1])){
@@ -196,6 +205,8 @@ export const calcDistance = (pathArr: string[]): number =>  {
     }
     const nowNodeId :string = pathArr[i];//"H05"
     /* 順方向 */
+    console.log(adjacencyList[nowNodeId].length)
+    //console.log(adjacencyList[nowNodeId][1])
     if(isForward){
       totalDistance += adjacencyList[nowNodeId][1].distance ?? 0;// デフォルト値0
     }else{
