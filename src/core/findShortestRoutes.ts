@@ -95,6 +95,7 @@ export const isForwardDirection =(startNodeId: string, endNodeId: string): boole
 
 /* nodeId(例: "H05")を数字(例: 5)に変換する関数 */
 const stringNodeToIntNode = (nodeId: string): number => {
+  //console.log(nodeId);
   const slicedNodeId: string = nodeId.slice(1);
   const intNodeId: number = Number(slicedNodeId);
   return intNodeId;
@@ -108,40 +109,43 @@ export const dijkstra = (startNodeId: string, endNodeId: string): string[] => {
   /* STEP1: スタート点からスタート点までの確定距離を0にする。 */
   distanceFromNodeList.find((node) => node.id === startNodeId)!.distance = 0;// リストのスタート点の距離を0(自明)
   distanceFromNodeList.find((node) => node.id === startNodeId)!.isConfirmed = true;// "!"でnullにならないことを保証 
-  /* 駅距離リストに未確定ノードがある限り回す */
-  while(!isAllNodeOfListConfirmed(distanceFromNodeList)){
+  /* 終了条件: ゴール点(endNodeId)が確定距離出たとき */
+  while(!distanceFromNodeList.find((node) => node.id === endNodeId)!.isConfirmed){
   /* 隣接ノード取得 */
-  const nextNodeArr: string[] = getNextNode(targetNodeId);// [H01, H03]
+  let nextNodeArr: string[] = getNextNode(targetNodeId);// [H01, H03]
   /* targetNodeIdの確定距離。(たどる元の距離）＋（辺に示された距離)の「たどる元の距離」にあたる */
   const targetNodeIdDist: number = distanceFromNodeList.find((node) => node.id === targetNodeId)!.distance;
     /* STEP2 確定距離の点と隣接点を精査して、短ければ上書き */
     for(const node of nextNodeArr){
+      //console.log("現在の隣接ノード: "+ node);
+      //console.log("ターゲットノード: " + targetNodeId)
       // console.log(calcDistance([targetNodeId, node]));
       const tempNode = distanceFromNodeList.find((nodes) => nodes.id === node);// ノードのオブジェクト取得
             //const isAddedQueue: boolean = distanceFromNodeList.some((nodes) => nodes.id === node);
-      
+      //console.log("tempNode: " + tempNode?.id)
       /* 隣接ノードが暫定距離かつqueueにすでにある暫定距離より短い場合(ない場合はちゃんと0になるのか？)  */
-      if((tempNode!.isConfirmed == false) && (targetNodeIdDist + calcDistance([targetNodeId, node]) < tempNode!.distance)){
-          tempNode!.distance =  targetNodeIdDist + calcDistance([targetNodeId, node]);// より短いものに更新
+      if((tempNode!.isConfirmed == false) && (targetNodeIdDist + calcAdjacencyNodeDist(targetNodeId, node)! < tempNode!.distance)){
+          tempNode!.distance =  targetNodeIdDist + calcAdjacencyNodeDist(targetNodeId, node)!;// より短いものに更新
           tempNode!.previousNodeId = targetNodeId;// 辿るノードを保存する(ゴールから後で逆に辿る)
-          console.log("hogehoge")
+          //console.log("最短距離更新！")
       }
-      /* STEP3: 一番短い暫定距離のものを確定距離にする */
-      const targetUnconfirmedNodeId: string = minIsConfirmed(distanceFromNodeList).id;// 未確定最小ノードid取得
-      distanceFromNodeList.find((node) => node.id === targetUnconfirmedNodeId)!.isConfirmed = true;// 暫定 -> 確定距離に変更
-      targetNodeId = targetUnconfirmedNodeId;// 今確定したノードの隣接を次回ループで探るためtargetに設定
+
     }
+         /* STEP3: 一番短い暫定距離のものを確定距離にする */
+    const targetUnconfirmedNodeId: string = minIsConfirmed(distanceFromNodeList).id;// 未確定最小ノードid取得
+    distanceFromNodeList.find((node) => node.id === targetUnconfirmedNodeId)!.isConfirmed = true;// 暫定 -> 確定距離に変更
+    targetNodeId = targetUnconfirmedNodeId;// 今確定したノードの隣接を次回ループで探るためtargetに設定
   }
-  //console.log(distanceFromNodeList)
-  const shortestArr: string[] = [];
+  console.log(distanceFromNodeList)
+  const shortestArr: string[] = [endNodeId];// ゴールから最短ノード辿る配列用意
 
   let tracedNodeId = distanceFromNodeList.find((nodes) => nodes.id === endNodeId)!.previousNodeId;// 
-  //console.log(tracedNodeId);
 
-  while(distanceFromNodeList.find((nodes) => nodes.id === tracedNodeId)!.previousNodeId == null){
+  while(tracedNodeId != distanceFromNodeList.find((nodes) => nodes.id === startNodeId)!.previousNodeId){
     shortestArr.push(tracedNodeId!);// 入れる(ただし逆順になる)
     tracedNodeId = distanceFromNodeList.find((nodes) => nodes.id === tracedNodeId)!.previousNodeId;// ノード辿る
   }
+  console.log(shortestArr)
   shortestArr.reverse();
 
   return shortestArr;
@@ -205,14 +209,31 @@ export const calcDistance = (pathArr: string[]): number =>  {
     }
     const nowNodeId :string = pathArr[i];//"H05"
     /* 順方向 */
-    console.log(adjacencyList[nowNodeId].length)
-    //console.log(adjacencyList[nowNodeId][1])
-    if(isForward){
-      totalDistance += adjacencyList[nowNodeId][1].distance ?? 0;// デフォルト値0
+    //console.log(adjacencyList[nowNodeId].length)
+    /* 今のノードの隣接リストの配列の長さ 1 -> 端点, 2以上 -> 中間点 */
+    const nowNodeLen = adjacencyList[nowNodeId].length;
+
+    /* 中間点(乗り換えありも含む)の場合 */
+    if(nowNodeLen >= 2){
+      if(isForward){
+        totalDistance += adjacencyList[nowNodeId][1].distance ?? 0;// デフォルト値0
+      }else{
+        /* 逆方向 */
+        totalDistance += adjacencyList[nowNodeId][0].distance ?? 0;
+      }
     }else{
-      /* 逆方向 */
-      totalDistance += adjacencyList[nowNodeId][0].distance ?? 0;
+      /* 端点は一方向しか選択肢ない */
+      totalDistance += adjacencyList[nowNodeId][0].distance ?? 0;// 端点はlengthが1なので[0]
     }
   }
   return totalDistance;
+}
+/* 隣接するノード間の距離を取得する関数 */
+export const calcAdjacencyNodeDist = (node1: string, node2: string) => {
+  /* node1は端点じゃない可能性が高い */
+  const node1AdjacencyObj = adjacencyList[node1];
+  //console.log("node1の隣接リスト" + JSON.stringify(node1AdjacencyObj))
+  //console.log("node1: " + node1)
+  //console.log("node2: "+node2);
+  return node1AdjacencyObj.find((node) => (node.node_id == node2))!.distance;// 隣接ノードの距離を取得して返却
 }
