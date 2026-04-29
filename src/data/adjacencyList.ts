@@ -37,17 +37,17 @@ export const adjacencyList: AdjacencyList = {
   H08: [
     { node_id: "H07", type: "walk_line", distance: 1.1 },
     { node_id: "H09", type: "walk_line", distance: 1.4 },
-    { node_id: "S02", type: "transfer" },
+    { node_id: "S02", type: "transfer", distance: 0 },
   ],
   H09: [
     { node_id: "H08", type: "walk_line", distance: 1.4 },
     { node_id: "H10", type: "walk_line", distance: 0.8 },
-    { node_id: "T07", type: "transfer" },
+    { node_id: "T07", type: "transfer", distance: 0 },
   ],
   H10: [
     { node_id: "H09", type: "walk_line", distance: 0.8 },
     { node_id: "H11", type: "walk_line", distance: 1.1 },
-    { node_id: "M05", type: "transfer" },
+    { node_id: "M05", type: "transfer", distance: 0 },
   ],
   H11: [
     { node_id: "H10", type: "walk_line", distance: 1.1 },
@@ -60,7 +60,7 @@ export const adjacencyList: AdjacencyList = {
   H13: [
     { node_id: "H12", type: "walk_line", distance: 0.7 },
     { node_id: "H14", type: "walk_line", distance: 0.7 },
-    { node_id: "S08", type: "transfer" },
+    { node_id: "S08", type: "transfer", distance: 0 },
   ],
   H14: [
     { node_id: "H13", type: "walk_line", distance: 0.7 },
@@ -73,7 +73,7 @@ export const adjacencyList: AdjacencyList = {
   H16: [
     { node_id: "H15", type: "walk_line", distance: 0.9 },
     { node_id: "H17", type: "walk_line", distance: 0.9 },
-    { node_id: "M17", type: "transfer" },
+    { node_id: "M17", type: "transfer", distance: 0 },
   ],
   H17: [
     { node_id: "H16", type: "walk_line", distance: 0.9 },
@@ -100,7 +100,7 @@ export const adjacencyList: AdjacencyList = {
   M01: [
     { node_id: "M28", type: "walk_line", distance: 1.0 },
     { node_id: "M02", type: "walk_line", distance: 0.7 },
-    { node_id: "E01", type: "transfer" },
+    { node_id: "E01", type: "transfer", distance: 0 },
   ],
   M02: [
     { node_id: "M01", type: "walk_line", distance: 0.7 },
@@ -109,7 +109,7 @@ export const adjacencyList: AdjacencyList = {
   M03: [
     { node_id: "M02", type: "walk_line", distance: 0.9 },
     { node_id: "M04", type: "walk_line", distance: 0.7 },
-    { node_id: "T09", type: "transfer" },
+    { node_id: "T09", type: "transfer", distance: 0 },
   ],
   M04: [
     { node_id: "M03", type: "walk_line", distance: 0.7 },
@@ -118,12 +118,12 @@ export const adjacencyList: AdjacencyList = {
   M05: [
     { node_id: "M04", type: "walk_line", distance: 0.7 },
     { node_id: "M06", type: "walk_line", distance: 0.4 },
-    { node_id: "H10", type: "transfer" },
+    { node_id: "H10", type: "transfer", distance: 0 },
   ],
   M06: [
     { node_id: "M05", type: "walk_line", distance: 0.4 },
     { node_id: "M07", type: "walk_line", distance: 0.9 },
-    { node_id: "S05", type: "transfer" },
+    { node_id: "S05", type: "transfer", distance: 0 },
   ],
   M07: [
     { node_id: "M06", type: "walk_line", distance: 0.9 },
@@ -144,7 +144,7 @@ export const adjacencyList: AdjacencyList = {
   M11: [
     { node_id: "M10", type: "walk_line", distance: 0.8 },
     { node_id: "M12", type: "walk_line", distance: 0.7 },
-    { node_id: "K02", type: "transfer" },
+    { node_id: "K02", type: "transfer", distance: 0 },
   ],
   M12: [
     { node_id: "M11", type: "walk_line", distance: 0.7 },
@@ -169,7 +169,7 @@ export const adjacencyList: AdjacencyList = {
   M17: [
     { node_id: "M16", type: "walk_line", distance: 1.1 },
     { node_id: "M18", type: "walk_line", distance: 0.9 },
-    { node_id: "H16", type: "transfer" },
+    { node_id: "H16", type: "transfer", distance: 0 },
   ],
   M18: [
     { node_id: "M17", type: "walk_line", distance: 0.9 },
@@ -182,7 +182,7 @@ export const adjacencyList: AdjacencyList = {
   M20: [
     { node_id: "M19", type: "walk_line", distance: 0.9 },
     { node_id: "M21", type: "walk_line", distance: 1.2 },
-    { node_id: "T15", type: "transfer" },
+    { node_id: "T15", type: "transfer", distance: 0 },
   ],
   M21: [
     { node_id: "M20", type: "walk_line", distance: 1.2 },
@@ -195,7 +195,7 @@ export const adjacencyList: AdjacencyList = {
   M23: [
     { node_id: "M22", type: "walk_line", distance: 1.0 },
     { node_id: "M24", type: "walk_line", distance: 0.8 },
-    { node_id: "S14", type: "transfer" },
+    { node_id: "S14", type: "transfer", distance: 0 },
   ],
   M24: [
     { node_id: "M23", type: "walk_line", distance: 0.8 },
@@ -220,7 +220,7 @@ export const adjacencyList: AdjacencyList = {
 
   E01: [
     { node_id: "E02", type: "walk_line", distance: 1.5 },
-    { node_id: "M01", type: "transfer" },
+    { node_id: "M01", type: "transfer", distance: 0 },
   ],
   E02: [
     { node_id: "E01", type: "walk_line", distance: 1.5 },
@@ -264,12 +264,12 @@ export const adjacencyList: AdjacencyList = {
   T06: [
     { node_id: "T05", type: "walk_line", distance: 1.3 },
     { node_id: "T07", type: "walk_line", distance: 0.7 },
-    { node_id: "S04", type: "transfer" },
+    { node_id: "S04", type: "transfer", distance: 0 },
   ],
   T07: [
     { node_id: "T06", type: "walk_line", distance: 0.7 },
     { node_id: "T08", type: "walk_line", distance: 0.8 },
-    { node_id: "H09", type: "transfer" },
+    { node_id: "H09", type: "transfer", distance: 0 },
   ],
   T08: [
     { node_id: "T07", type: "walk_line", distance: 0.8 },
@@ -278,7 +278,7 @@ export const adjacencyList: AdjacencyList = {
   T09: [
     { node_id: "T08", type: "walk_line", distance: 0.8 },
     { node_id: "T10", type: "walk_line", distance: 0.9 },
-    { node_id: "M03", type: "transfer" },
+    { node_id: "M03", type: "transfer", distance: 0 },
   ],
   T10: [
     { node_id: "T09", type: "walk_line", distance: 0.9 },
@@ -291,7 +291,7 @@ export const adjacencyList: AdjacencyList = {
   T12: [
     { node_id: "T11", type: "walk_line", distance: 0.9 },
     { node_id: "T13", type: "walk_line", distance: 1.2 },
-    { node_id: "S10", type: "transfer" },
+    { node_id: "S10", type: "transfer", distance: 0 },
   ],
   T13: [
     { node_id: "T12", type: "walk_line", distance: 1.2 },
@@ -304,7 +304,7 @@ export const adjacencyList: AdjacencyList = {
   T15: [
     { node_id: "T14", type: "walk_line", distance: 1.1 },
     { node_id: "T16", type: "walk_line", distance: 1.5 },
-    { node_id: "M20", type: "transfer" },
+    { node_id: "M20", type: "transfer", distance: 0 },
   ],
   T16: [
     { node_id: "T15", type: "walk_line", distance: 1.5 },
@@ -328,7 +328,7 @@ export const adjacencyList: AdjacencyList = {
   S02: [
     { node_id: "S01", type: "walk_line", distance: 0.9 },
     { node_id: "S03", type: "walk_line", distance: 0.7 },
-    { node_id: "H08", type: "transfer" },
+    { node_id: "H08", type: "transfer", distance: 0 },
   ],
   S03: [
     { node_id: "S02", type: "walk_line", distance: 0.7 },
@@ -337,12 +337,12 @@ export const adjacencyList: AdjacencyList = {
   S04: [
     { node_id: "S03", type: "walk_line", distance: 0.9 },
     { node_id: "S05", type: "walk_line", distance: 0.7 },
-    { node_id: "T06", type: "transfer" },
+    { node_id: "T06", type: "transfer", distance: 0 },
   ],
   S05: [
     { node_id: "S04", type: "walk_line", distance: 0.7 },
     { node_id: "S06", type: "walk_line", distance: 0.5 },
-    { node_id: "M06", type: "transfer" },
+    { node_id: "M06", type: "transfer", distance: 0 },
   ],
   S06: [
     { node_id: "S05", type: "walk_line", distance: 0.5 },
@@ -355,7 +355,7 @@ export const adjacencyList: AdjacencyList = {
   S08: [
     { node_id: "S07", type: "walk_line", distance: 1.0 },
     { node_id: "S09", type: "walk_line", distance: 1.0 },
-    { node_id: "H13", type: "transfer" },
+    { node_id: "H13", type: "transfer", distance: 0 },
   ],
   S09: [
     { node_id: "S08", type: "walk_line", distance: 1.0 },
@@ -364,7 +364,7 @@ export const adjacencyList: AdjacencyList = {
   S10: [
     { node_id: "S09", type: "walk_line", distance: 1.0 },
     { node_id: "S11", type: "walk_line", distance: 0.9 },
-    { node_id: "T12", type: "transfer" },
+    { node_id: "T12", type: "transfer", distance: 0 },
   ],
   S11: [
     { node_id: "S10", type: "walk_line", distance: 0.9 },
@@ -381,7 +381,7 @@ export const adjacencyList: AdjacencyList = {
   S14: [
     { node_id: "S13", type: "walk_line", distance: 1.0 },
     { node_id: "S15", type: "walk_line", distance: 1.0 },
-    { node_id: "M23", type: "transfer" },
+    { node_id: "M23", type: "transfer", distance: 0 },
   ],
   S15: [
     { node_id: "S14", type: "walk_line", distance: 1.0 },
@@ -412,7 +412,7 @@ export const adjacencyList: AdjacencyList = {
   K01: [{ node_id: "K02", type: "walk_line", distance: 0.8 }],
   K02: [
     { node_id: "K01", type: "walk_line", distance: 0.8 },
-    { node_id: "M11", type: "transfer" },
+    { node_id: "M11", type: "transfer", distance: 0 },
   ],
 };
 export default adjacencyList;
