@@ -1,6 +1,6 @@
 import {adjacencyList, type AdjacencyList} from "../data/adjacencyList";
 import { distanceFromNodeList, type DistanceFromNodeList } from "../types/distanceFromNodeList";
-import { DistanceFromNode } from "../types/distanceFromNodeList";
+import { type DistanceFromNode } from "../types/distanceFromNodeList";
 export const findShortestRoutes = function (
   startNodeId: string,
   endNodeId: string
@@ -237,3 +237,4 @@ export const calcAdjacencyNodeDist = (node1: string, node2: string) => {
   //console.log("node2: "+node2);
   return node1AdjacencyObj.find((node) => (node.node_id == node2))!.distance;// 隣接ノードの距離を取得して返却
 }
+export default dijkstra;
