@@ -8,7 +8,7 @@ export const HomePage = () => {
     const [secondSta, setSecondSta] = useState("");
     const handleDijkstra = () => {
         console.log("最初駅: " + firstSta)
-        setRoute(dijkstra(firstSta, secondSta));
+        setRoute(dijkstra(firstSta, secondSta).route);
 
     }
     const onSetFirstSta = (e: React.ChangeEvent<HTMLSelectElement>) => {

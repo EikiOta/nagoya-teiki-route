@@ -101,7 +101,7 @@ const stringNodeToIntNode = (nodeId: string): number => {
   return intNodeId;
 }
 /* ダイクストラ法による最短ルート算出 */
-export const dijkstra = (startNodeId: string, endNodeId: string): string[] => {
+export const dijkstra = (startNodeId: string, endNodeId: string) => {
 
   let targetNodeId: string = startNodeId;// "H05"
   //let queue: DistanceFromNodeList = [];//[{node_id, distance }] // queueは次の確定距離候補になる暫定距離のリスト。
@@ -140,15 +140,14 @@ export const dijkstra = (startNodeId: string, endNodeId: string): string[] => {
   const shortestArr: string[] = [endNodeId];// ゴールから最短ノード辿る配列用意
 
   let tracedNodeId = distanceFromNodeList.find((nodes) => nodes.id === endNodeId)!.previousNodeId;// 
-
   while(tracedNodeId != distanceFromNodeList.find((nodes) => nodes.id === startNodeId)!.previousNodeId){
     shortestArr.push(tracedNodeId!);// 入れる(ただし逆順になる)
     tracedNodeId = distanceFromNodeList.find((nodes) => nodes.id === tracedNodeId)!.previousNodeId;// ノード辿る
   }
   console.log(shortestArr)
-  shortestArr.reverse();
-
-  return shortestArr;
+  shortestArr.reverse();// 逆順なので反転する
+  const routeDistance = calcDistance(shortestArr);// 最短ルート配列から距離を取得
+  return {route: shortestArr, distance: routeDistance};// 戻り値はオブジェクトそれぞれ最短距離配列、最短距離
 }
 
 /* 暫定距離キューのソート (不使用)*/
