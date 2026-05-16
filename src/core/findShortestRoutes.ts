@@ -1,6 +1,7 @@
 import {adjacencyList, type AdjacencyList} from "../data/adjacencyList";
 import { distanceFromNodeList, type DistanceFromNodeList } from "../types/distanceFromNodeList";
 import { type DistanceFromNode } from "../types/distanceFromNodeList";
+import createNewDijkstraList from "./createNewDijkstraList";
 export const findShortestRoutes = function (
   startNodeId: string,
   endNodeId: string
@@ -105,24 +106,21 @@ export const dijkstra = (startNodeId: string, endNodeId: string) => {
 
   let targetNodeId: string = startNodeId;// "H05"
   //let queue: DistanceFromNodeList = [];//[{node_id, distance }] // queueは次の確定距離候補になる暫定距離のリスト。
-
+  const nodeStateList: DistanceFromNodeList = createNewDijkstraList();// リスト新規作成したものを格納
   /* STEP1: スタート点からスタート点までの確定距離を0にする。 */
-  distanceFromNodeList.find((node) => node.id === startNodeId)!.distance = 0;// リストのスタート点の距離を0(自明)
-  distanceFromNodeList.find((node) => node.id === startNodeId)!.isConfirmed = true;// "!"でnullにならないことを保証 
+  nodeStateList.find((node) => node.id === startNodeId)!.distance = 0;// リストのスタート点の距離を0(自明)
+  nodeStateList.find((node) => node.id === startNodeId)!.isConfirmed = true;// "!"でnullにならないことを保証 
   /* 終了条件: ゴール点(endNodeId)が確定距離出たとき */
-  while(!distanceFromNodeList.find((node) => node.id === endNodeId)!.isConfirmed){
+  while(!nodeStateList.find((node) => node.id === endNodeId)!.isConfirmed){
   /* 隣接ノード取得 */
   let nextNodeArr: string[] = getNextNode(targetNodeId);// [H01, H03]
   /* targetNodeIdの確定距離。(たどる元の距離）＋（辺に示された距離)の「たどる元の距離」にあたる */
-  const targetNodeIdDist: number = distanceFromNodeList.find((node) => node.id === targetNodeId)!.distance;
+  const targetNodeIdDist: number = nodeStateList.find((node) => node.id === targetNodeId)!.distance;
     /* STEP2 確定距離の点と隣接点を精査して、短ければ上書き */
     for(const node of nextNodeArr){
-      //console.log("現在の隣接ノード: "+ node);
-      //console.log("ターゲットノード: " + targetNodeId)
-      // console.log(calcDistance([targetNodeId, node]));
-      const tempNode = distanceFromNodeList.find((nodes) => nodes.id === node);// ノードのオブジェクト取得
-            //const isAddedQueue: boolean = distanceFromNodeList.some((nodes) => nodes.id === node);
-      //console.log("tempNode: " + tempNode?.id)
+
+      const tempNode = nodeStateList.find((nodes) => nodes.id === node);// ノードのオブジェクト取得
+
       /* 隣接ノードが暫定距離かつqueueにすでにある暫定距離より短い場合(ない場合はちゃんと0になるのか？)  */
       if((tempNode!.isConfirmed == false) && (targetNodeIdDist + calcAdjacencyNodeDist(targetNodeId, node)! < tempNode!.distance)){
           tempNode!.distance =  targetNodeIdDist + calcAdjacencyNodeDist(targetNodeId, node)!;// より短いものに更新
@@ -132,17 +130,18 @@ export const dijkstra = (startNodeId: string, endNodeId: string) => {
 
     }
          /* STEP3: 一番短い暫定距離のものを確定距離にする */
-    const targetUnconfirmedNodeId: string = minIsConfirmed(distanceFromNodeList).id;// 未確定最小ノードid取得
-    distanceFromNodeList.find((node) => node.id === targetUnconfirmedNodeId)!.isConfirmed = true;// 暫定 -> 確定距離に変更
+    console.log(nodeStateList)
+    const targetUnconfirmedNodeId: string = minIsConfirmed(nodeStateList).id;// 未確定最小ノードid取得
+    nodeStateList.find((node) => node.id === targetUnconfirmedNodeId)!.isConfirmed = true;// 暫定 -> 確定距離に変更
     targetNodeId = targetUnconfirmedNodeId;// 今確定したノードの隣接を次回ループで探るためtargetに設定
   }
-  console.log(distanceFromNodeList)
+
   const shortestArr: string[] = [endNodeId];// ゴールから最短ノード辿る配列用意
 
-  let tracedNodeId = distanceFromNodeList.find((nodes) => nodes.id === endNodeId)!.previousNodeId;// 
-  while(tracedNodeId != distanceFromNodeList.find((nodes) => nodes.id === startNodeId)!.previousNodeId){
+  let tracedNodeId = nodeStateList.find((nodes) => nodes.id === endNodeId)!.previousNodeId;// 
+  while(tracedNodeId != nodeStateList.find((nodes) => nodes.id === startNodeId)!.previousNodeId){
     shortestArr.push(tracedNodeId!);// 入れる(ただし逆順になる)
-    tracedNodeId = distanceFromNodeList.find((nodes) => nodes.id === tracedNodeId)!.previousNodeId;// ノード辿る
+    tracedNodeId = nodeStateList.find((nodes) => nodes.id === tracedNodeId)!.previousNodeId;// ノード辿る
   }
   console.log(shortestArr)
   shortestArr.reverse();// 逆順なので反転する
