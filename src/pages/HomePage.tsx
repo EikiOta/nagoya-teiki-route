@@ -1,11 +1,12 @@
 import Stations from "../data/stationNodes.ts";
 import dijkstra from "../core/findShortestRoutes.ts";
 import { useEffect, useState } from 'react';
-
+import convertFareSection from "../core/fareSection.ts";
 export const HomePage = () => {
     const [route, setRoute] = useState<string[]>([]);// route保存 + 再描画
     const [firstSta, setFirstSta] = useState("");
     const [secondSta, setSecondSta] = useState("");
+    const [fareSec, setFareSec] = useState(0);
 
     const onSetFirstSta = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setFirstSta(e.target.value);
@@ -19,8 +20,16 @@ export const HomePage = () => {
     const stations = Stations;
     useEffect(() => {
 
+
         if(firstSta !== "" && secondSta !== ""){
-            setRoute(dijkstra(firstSta, secondSta).route);
+            //setRoute(dijkstra(firstSta, secondSta).route);
+            const {route, distance} = dijkstra(firstSta, secondSta);
+            /* 下記二つのroute, distanceは上記定義のstateのものとは違う */
+            setRoute(route);
+            console.log("距離" + distance);
+            console.log("区間" + convertFareSection(distance));
+            setFareSec(convertFareSection(distance));
+            
         }
     }, [firstSta, secondSta])
   return (
@@ -38,7 +47,10 @@ export const HomePage = () => {
           return <option key={station.id} value={station.id} disabled={firstSta==station.id ? true : false}>{station.name}</option>;
         })}
         </select>
+        <p>ルート</p>
         {route}
+        <p>最短区間</p>
+        {fareSec}
     </>
   );
 }

@@ -130,7 +130,7 @@ export const dijkstra = (startNodeId: string, endNodeId: string) => {
 
     }
          /* STEP3: 一番短い暫定距離のものを確定距離にする */
-    console.log(nodeStateList)
+    //console.log(nodeStateList)
     const targetUnconfirmedNodeId: string = minIsConfirmed(nodeStateList).id;// 未確定最小ノードid取得
     nodeStateList.find((node) => node.id === targetUnconfirmedNodeId)!.isConfirmed = true;// 暫定 -> 確定距離に変更
     targetNodeId = targetUnconfirmedNodeId;// 今確定したノードの隣接を次回ループで探るためtargetに設定
@@ -142,10 +142,11 @@ export const dijkstra = (startNodeId: string, endNodeId: string) => {
   while(tracedNodeId != nodeStateList.find((nodes) => nodes.id === startNodeId)!.previousNodeId){
     shortestArr.push(tracedNodeId!);// 入れる(ただし逆順になる)
     tracedNodeId = nodeStateList.find((nodes) => nodes.id === tracedNodeId)!.previousNodeId;// ノード辿る
+    
   }
-  console.log(shortestArr)
+  //console.log(shortestArr)
   shortestArr.reverse();// 逆順なので反転する
-  const routeDistance = calcDistance(shortestArr);// 最短ルート配列から距離を取得
+  const routeDistance = nodeStateList.find((nodes) => nodes.id === endNodeId)!.distance;// Listはすべてスタートからの距離
   return {route: shortestArr, distance: routeDistance};// 戻り値はオブジェクトそれぞれ最短距離配列、最短距離
 }
 
