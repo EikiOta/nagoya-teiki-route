@@ -2,6 +2,7 @@ import {adjacencyList, type AdjacencyList} from "../data/adjacencyList";
 import { distanceFromNodeList, type DistanceFromNodeList } from "../types/distanceFromNodeList";
 import { type DistanceFromNode } from "../types/distanceFromNodeList";
 import createNewDijkstraList from "./createNewDijkstraList";
+import {getNextNode} from "./graphUtils";
 export const findShortestRoutes = function (
   startNodeId: string,
   endNodeId: string
@@ -13,19 +14,7 @@ export const findShortestRoutes = function (
   //console.log(foo[startNodeId]);
   //console.log(adjacencyList[startNodeId][0].type)
 };
-/* 隣接ノードを取得(乗り換えも含む) */
-export const getNextNode = (nodeId: string):string[] =>  {
-  const nextNodeArr: string[] = [];
-  const arrLen: number = adjacencyList[nodeId].length;
-  for(let i:number = 0;i < arrLen;i++){
-    /* 乗り換えは除外 */
-    // if(adjacencyList[nodeId][i].type == "transfer"){
-    //   break;
-    // }
-    nextNodeArr.push(adjacencyList[nodeId][i].node_id);
-  }
-  return nextNodeArr;
-};
+
 /* 乗り換えを除いた一直線の経路を配列で返す(ただし先頭が末端の場合) */
 export const getLinerPath = (startNodeId: string, endNodeId: string):string[] => {
   const judgeDir:boolean = isForwardDirection(startNodeId, endNodeId); // 順方向 -> true, 逆方向-> false
@@ -113,7 +102,7 @@ export const dijkstra = (startNodeId: string, endNodeId: string) => {
   /* 終了条件: ゴール点(endNodeId)が確定距離出たとき */
   while(!nodeStateList.find((node) => node.id === endNodeId)!.isConfirmed){
   /* 隣接ノード取得 */
-  let nextNodeArr: string[] = getNextNode(targetNodeId);// [H01, H03]
+  const nextNodeArr: string[] = getNextNode(targetNodeId);// [H01, H03]
   /* targetNodeIdの確定距離。(たどる元の距離）＋（辺に示された距離)の「たどる元の距離」にあたる */
   const targetNodeIdDist: number = nodeStateList.find((node) => node.id === targetNodeId)!.distance;
     /* STEP2 確定距離の点と隣接点を精査して、短ければ上書き */
