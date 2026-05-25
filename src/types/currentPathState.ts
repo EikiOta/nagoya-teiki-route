@@ -4,3 +4,5 @@ export type currentPathState = {
   transferCount: number; // 乗り換え回数判定用。3回以内。
   constraintStationKeys: Set<string>; // 「特別駅 + 乗換駅」5駅以内判定用。"motoyama"などを入れる。乗り換えせずに通過した場合も格納される。存在確認メインなのでset。
 };
+
+export type candidateRouteList = currentPathState[];

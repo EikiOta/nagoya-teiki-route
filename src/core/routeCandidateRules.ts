@@ -9,7 +9,8 @@ import { isTransferred, getPrevStationKey } from "./graphUtils";
 
 /* 特別駅(経路・接続号線を判別する駅（大曽根、金山、西高蔵、国際センター、吹上）) stationKey準拠 */
 export const SPECIAL_STATION_KEYS = new Set<string>(["ozone", "kanayama", "nishitakakura", "kokusai_center", "fukiage"]);
-
+export const TRANSFER_STATION_KEYS = new Set<string>(["kanayama", "nagoya", "fushimi", "sakae", "imaike", "motoyama", "heiandori", "kamimaezu", "hisaya_odori", "yagoto", "aratamabashi", "marunouchi", "gokiso"]);
+export const CONSTRAINT_STATION_KEYS = new Set([...SPECIAL_STATION_KEYS, ...TRANSFER_STATION_KEYS]);
 /* 条件を満たしてるかbooleanで判定する関数。 一筆書き -> 乗り換え(あれば) -> 特定駅数 の順番*/
 export const isFulfilledCandidateRules = (currentPathState: currentPathState, nextNodeId: string): boolean => {
 
@@ -18,11 +19,15 @@ export const isFulfilledCandidateRules = (currentPathState: currentPathState, ne
         return false;// あった場合はアウト
     }
     const nextStationKey:string = stations.find((node) => node.id == nextNodeId)!.stationKey;// nodeIdからstationKeyに変換
-    /* nextNodeIdのstationKeyはusedStationKeysの中にあるか？ */
+    
+
+
+
+    /* nextNodeIdのstationKeyはusedStationKeysの中にあるか？-> true: ただの乗り換えか判定, false: 一筆書きは満たしている */
     if(currentPathState.usedStationKeys.has(nextStationKey)){
         /* currentPathStateから直前(prevNode)のstationKeyを取得 */
         const prevStationKey = getPrevStationKey(currentPathState);
-        /* 直前の駅名と今回の駅名が同じではない？（乗り換えの有無） */
+        /* 直前の駅名と今回の駅名が同じではない？（乗り換えの有無） FIXME: 否定命題なので変えたい */
         if(!isTransferred(nextStationKey, prevStationKey)){
             return false;
         }
@@ -30,17 +35,25 @@ export const isFulfilledCandidateRules = (currentPathState: currentPathState, ne
         if(currentPathState.transferCount == 3){
             return false;// これ以上乗り換えできないためアウト
         }
-    }else{
-        /* 特別駅ではない？ */
-        if(!SPECIAL_STATION_KEYS.has(nextStationKey)){
-            return true;// 特別駅でないなら追加可能
+    }
+
+    /* constraintStationKeysに追加する必要があるか？ -> 特別駅もしくは乗り換え対象駅で、既存のconstraintStationKeysにない？ */
+    if(shouldAddConstraintStationKey(nextStationKey, currentPathState)){
+        if(currentPathState.constraintStationKeys.size == 5){
+            return false;// 5駅以上無理なので追加不可
         }
     }
-    /* constraintStationKeys(特別駅 + 乗り換え駅)の数が上限の5であるか？ */
-    if(currentPathState.constraintStationKeys.size == 5){
-        return false;// これ以上乗り換え駅or特別駅を増やすことは不可能なのでアウト
-    }
-    /* 追加確定 */
     return true;// 追加可能
 }
 export default isFulfilledCandidateRules;
+
+
+/* constraintStationKeys(通過した制約駅)に追加する必要があるか？ -> 特別駅もしくは乗り換え対象駅で、既存のconstraintStationKeysにない？を判定する関数 */
+export const shouldAddConstraintStationKey = (targetStationKey: string, currentPathState: currentPathState) => {
+    /* ターゲットは制約リスト(乗り換え駅または特別駅)にある駅かつ既存のconstraintStationKeysにないか？ */
+    if((CONSTRAINT_STATION_KEYS.has(targetStationKey)) && !currentPathState.constraintStationKeys.has(targetStationKey)){
+        return true;// 追加する必要あり
+    }else{
+        return false;// 追加不要
+    }
+}
