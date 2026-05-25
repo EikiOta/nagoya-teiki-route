@@ -41,7 +41,7 @@ export const routeCandidateFinder = (startNodeId: string, endNodeId: string) => 
         }
     }
     recursiveDFS(initialCurrentPathState);
-
+    return candidateRouteList;
     
 }
 

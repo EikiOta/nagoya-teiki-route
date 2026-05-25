@@ -2,11 +2,16 @@ import Stations from "../data/stationNodes.ts";
 import dijkstra from "../core/findShortestRoutes.ts";
 import { useEffect, useState } from 'react';
 import convertFareSection from "../core/fareSection.ts";
+import type { currentPathState } from "../types/currentPathState.ts";
+import { routeCandidateFinder } from "../core/routeCandidateFinder.ts";
+
 export const HomePage = () => {
     const [route, setRoute] = useState<string[]>([]);// route保存 + 再描画
     const [firstSta, setFirstSta] = useState("");
     const [secondSta, setSecondSta] = useState("");
     const [fareSec, setFareSec] = useState(0);
+
+    const [routeCandidates, setRouteCandidates] = useState<currentPathState[]>([]);// DFS(ルート候補)の結果状態管理
 
     const onSetFirstSta = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setFirstSta(e.target.value);
@@ -24,12 +29,12 @@ export const HomePage = () => {
         if(firstSta !== "" && secondSta !== ""){
             //setRoute(dijkstra(firstSta, secondSta).route);
             const {route, distance} = dijkstra(firstSta, secondSta);
+            const routeCandidates = routeCandidateFinder(firstSta, secondSta);
             /* 下記二つのroute, distanceは上記定義のstateのものとは違う */
             setRoute(route);
-            console.log("距離" + distance);
-            console.log("区間" + convertFareSection(distance));
             setFareSec(convertFareSection(distance));
-            
+
+            setRouteCandidates(routeCandidates);// DFS探索
         }
     }, [firstSta, secondSta])
   return (
@@ -51,6 +56,10 @@ export const HomePage = () => {
         {route}
         <p>最短区間</p>
         {fareSec}
+        <p>ルート候補</p>
+        {routeCandidates.map((routeCandidate) => {
+            return routeCandidate.routeNodesIds.join(" → ")
+        })}
     </>
   );
 }
