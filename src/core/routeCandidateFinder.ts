@@ -1,6 +1,5 @@
 /* 必須駅２駅から条件を満たす候補ルート一覧を出力する関数(DFS) */
 import {getNextNode} from "./graphUtils";
-import adjacencyList from "../data/adjacencyList";
 import type { currentPathState, candidateRouteList } from "../types/currentPathState";
 import isFulfilledCandidateRules from "./routeCandidateRules";
 import { createNextPathState } from "./createNextPathState";
@@ -24,6 +23,7 @@ export const routeCandidateFinder = (startNodeId: string, endNodeId: string) => 
             /* 候補ルートリストに追加 */
             candidateRouteList.push(currentPathState);
             console.log(currentPathState.routeNodesIds);
+            console.log("hasPurchaseWarning: " + currentPathState.hasPurchaseWarning)
             return;// endNodeに達したらこの世界線は打ち切って次
         }
         const nextNodeArr: string[] = getNextNode(prevNodeId);
@@ -54,7 +54,8 @@ const initializePathState = (startNodeId: string): currentPathState => {
         routeNodesIds: [startNodeId],
         usedStationKeys: usedStationKeys.add(startNodeStationKey),
         transferCount: 0,
-        constraintStationKeys: constraintStationKeys
+        constraintStationKeys: constraintStationKeys,
+        hasPurchaseWarning: false
     }
     /* 制約駅(特別駅 + 乗り換え駅)リストにあるか */
     if(CONSTRAINT_STATION_KEYS.has(startNodeStationKey)){

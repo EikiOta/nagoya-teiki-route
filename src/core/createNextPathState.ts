@@ -13,7 +13,8 @@ export const createNextPathState = (currentPathState: currentPathState, nextNode
         routeNodesIds: [...currentPathState.routeNodesIds, nextNode],
         usedStationKeys: new Set(currentPathState.usedStationKeys),
         transferCount: currentPathState.transferCount,
-        constraintStationKeys: new Set(currentPathState.constraintStationKeys)
+        constraintStationKeys: new Set(currentPathState.constraintStationKeys),
+        hasPurchaseWarning: currentPathState.hasPurchaseWarning
     }
     
     const prevStationKey = getPrevStationKey(currentPathState);
@@ -25,9 +26,12 @@ export const createNextPathState = (currentPathState: currentPathState, nextNode
         /* 乗り換えではない場合 */
         newCurrentPathState.usedStationKeys.add(nextStationKey);// stationKeyを物理駅リストに追加
     }
-    /* constraintStationKeysについて */
+    /* constraintStationKeysを追加する必要があるか */
     if(shouldAddConstraintStationKey(nextStationKey, currentPathState)){
         newCurrentPathState.constraintStationKeys.add(nextStationKey);// 制約駅リストに新規追加
+        if((!newCurrentPathState.hasPurchaseWarning) && (newCurrentPathState.constraintStationKeys.size > 5)){
+            newCurrentPathState.hasPurchaseWarning = true;
+        }
     }
     return newCurrentPathState;
 }

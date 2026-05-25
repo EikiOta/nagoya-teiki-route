@@ -37,12 +37,7 @@ export const isFulfilledCandidateRules = (currentPathState: currentPathState, ne
         }
     }
 
-    /* constraintStationKeysに追加する必要があるか？ -> 特別駅もしくは乗り換え対象駅で、既存のconstraintStationKeysにない？ */
-    if(shouldAddConstraintStationKey(nextStationKey, currentPathState)){
-        if(currentPathState.constraintStationKeys.size == 5){
-            return false;// 5駅以上無理なので追加不可
-        }
-    }
+
     return true;// 追加可能
 }
 export default isFulfilledCandidateRules;
