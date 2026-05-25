@@ -7,8 +7,6 @@ import { shouldAddConstraintStationKey } from "./routeCandidateRules";
 -> 再帰ごとに複製する。使い回すと別の世界線のものが混じってバグの温床
 */
 export const createNextPathState = (currentPathState: currentPathState, nextNode: string) => {
-    //console.log(currentPathState.usedStationKeys.size)
-
     const newCurrentPathState: currentPathState = {
         routeNodesIds: [...currentPathState.routeNodesIds, nextNode],
         usedStationKeys: new Set(currentPathState.usedStationKeys),

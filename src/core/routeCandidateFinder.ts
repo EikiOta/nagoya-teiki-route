@@ -22,8 +22,6 @@ export const routeCandidateFinder = (startNodeId: string, endNodeId: string) => 
         if(prevNodeId == endNodeId){
             /* 候補ルートリストに追加 */
             candidateRouteList.push(currentPathState);
-            console.log(currentPathState.routeNodesIds);
-            console.log("hasPurchaseWarning: " + currentPathState.hasPurchaseWarning)
             return;// endNodeに達したらこの世界線は打ち切って次
         }
         const nextNodeArr: string[] = getNextNode(prevNodeId);

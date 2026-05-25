@@ -6,10 +6,6 @@ export const getNextNode = (nodeId: string):string[] =>  {
   const nextNodeArr: string[] = [];
   const arrLen: number = adjacencyList[nodeId].length;
   for(let i:number = 0;i < arrLen;i++){
-    /* 乗り換えは除外 */
-    // if(adjacencyList[nodeId][i].type == "transfer"){
-    //   break;
-    // }
     nextNodeArr.push(adjacencyList[nodeId][i].node_id);
   }
   return nextNodeArr;

@@ -1,19 +1,8 @@
-import {adjacencyList, type AdjacencyList} from "../data/adjacencyList";
-import { distanceFromNodeList, type DistanceFromNodeList } from "../types/distanceFromNodeList";
+import {adjacencyList} from "../data/adjacencyList";
+import {type DistanceFromNodeList } from "../types/distanceFromNodeList";
 import { type DistanceFromNode } from "../types/distanceFromNodeList";
 import createNewDijkstraList from "./createNewDijkstraList";
 import {getNextNode} from "./graphUtils";
-export const findShortestRoutes = function (
-  startNodeId: string,
-  endNodeId: string
-): void {
-  //const fuga: keyof AdjacencyList = startNodeId;
-  // console.log(adjacencyList[hoge]);
-  //console.log(adjacencyList[startNodeId]);
-  // console.log(adjacencyList[startNodeId]);
-  //console.log(foo[startNodeId]);
-  //console.log(adjacencyList[startNodeId][0].type)
-};
 
 /* 乗り換えを除いた一直線の経路を配列で返す(ただし先頭が末端の場合) */
 export const getLinerPath = (startNodeId: string, endNodeId: string):string[] => {
@@ -85,7 +74,6 @@ export const isForwardDirection =(startNodeId: string, endNodeId: string): boole
 
 /* nodeId(例: "H05")を数字(例: 5)に変換する関数 */
 const stringNodeToIntNode = (nodeId: string): number => {
-  //console.log(nodeId);
   const slicedNodeId: string = nodeId.slice(1);
   const intNodeId: number = Number(slicedNodeId);
   return intNodeId;
@@ -114,12 +102,10 @@ export const dijkstra = (startNodeId: string, endNodeId: string) => {
       if((tempNode!.isConfirmed == false) && (targetNodeIdDist + calcAdjacencyNodeDist(targetNodeId, node)! < tempNode!.distance)){
           tempNode!.distance =  targetNodeIdDist + calcAdjacencyNodeDist(targetNodeId, node)!;// より短いものに更新
           tempNode!.previousNodeId = targetNodeId;// 辿るノードを保存する(ゴールから後で逆に辿る)
-          //console.log("最短距離更新！")
       }
 
     }
          /* STEP3: 一番短い暫定距離のものを確定距離にする */
-    //console.log(nodeStateList)
     const targetUnconfirmedNodeId: string = minIsConfirmed(nodeStateList).id;// 未確定最小ノードid取得
     nodeStateList.find((node) => node.id === targetUnconfirmedNodeId)!.isConfirmed = true;// 暫定 -> 確定距離に変更
     targetNodeId = targetUnconfirmedNodeId;// 今確定したノードの隣接を次回ループで探るためtargetに設定
@@ -133,7 +119,7 @@ export const dijkstra = (startNodeId: string, endNodeId: string) => {
     tracedNodeId = nodeStateList.find((nodes) => nodes.id === tracedNodeId)!.previousNodeId;// ノード辿る
     
   }
-  //console.log(shortestArr)
+
   shortestArr.reverse();// 逆順なので反転する
   const routeDistance = nodeStateList.find((nodes) => nodes.id === endNodeId)!.distance;// Listはすべてスタートからの距離
   return {route: shortestArr, distance: routeDistance};// 戻り値はオブジェクトそれぞれ最短距離配列、最短距離
@@ -197,7 +183,7 @@ export const calcDistance = (pathArr: string[]): number =>  {
     }
     const nowNodeId :string = pathArr[i];//"H05"
     /* 順方向 */
-    //console.log(adjacencyList[nowNodeId].length)
+
     /* 今のノードの隣接リストの配列の長さ 1 -> 端点, 2以上 -> 中間点 */
     const nowNodeLen = adjacencyList[nowNodeId].length;
 
@@ -220,9 +206,6 @@ export const calcDistance = (pathArr: string[]): number =>  {
 export const calcAdjacencyNodeDist = (node1: string, node2: string) => {
   /* node1は端点じゃない可能性が高い */
   const node1AdjacencyObj = adjacencyList[node1];
-  //console.log("node1の隣接リスト" + JSON.stringify(node1AdjacencyObj))
-  //console.log("node1: " + node1)
-  //console.log("node2: "+node2);
   return node1AdjacencyObj.find((node) => (node.node_id == node2))!.distance;// 隣接ノードの距離を取得して返却
 }
 export default dijkstra;
