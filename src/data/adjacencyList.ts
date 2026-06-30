@@ -5,7 +5,7 @@ export interface AdjacencyList {
   [key: string]: Array<{
     node_id: string;
     type: string;
-    distance?: number;// kmではなくメートル表記
+    distance: number;// kmではなくメートル表記
   }>;
 }
 export const adjacencyList: AdjacencyList = {

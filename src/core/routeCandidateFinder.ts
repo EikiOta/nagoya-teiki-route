@@ -7,10 +7,10 @@ import stations from "../data/stationNodes";
 import { CONSTRAINT_STATION_KEYS } from "./routeCandidateRules";
 
 /* DFS */
-export const routeCandidateFinder = (startNodeId: string, endNodeId: string) => {
+export const routeCandidateFinder = (startNodeId: string, endNodeId: string, maxFareSection: number) => {
     const candidateRouteList: candidateRouteList = [];
     const initialCurrentPathState: currentPathState = initializePathState(startNodeId);// startNode入れたpathState取得
-    const recursiveDFS = (currentPathState: currentPathState) => {
+    const recursiveDFS = (currentPathState: currentPathState,) => {
 
         const prevNodeId = currentPathState.routeNodesIds.at(-1);// 末尾が一つ前のnode
         /* type narrowing */
@@ -27,7 +27,7 @@ export const routeCandidateFinder = (startNodeId: string, endNodeId: string) => 
         const nextNodeArr: string[] = getNextNode(prevNodeId);
         for(const nextNode of nextNodeArr){
             /* 追加前に制約満たしているか？ */
-            if(!isFulfilledCandidateRules(currentPathState, nextNode)){
+            if(!isFulfilledCandidateRules(currentPathState, nextNode, maxFareSection)){
                 continue;
             }
             /* 追加可能 */
@@ -53,7 +53,8 @@ const initializePathState = (startNodeId: string): currentPathState => {
         usedStationKeys: usedStationKeys.add(startNodeStationKey),
         transferCount: 0,
         constraintStationKeys: constraintStationKeys,
-        hasPurchaseWarning: false
+        hasPurchaseWarning: false, 
+        distanceMeters: 0
     }
     /* 制約駅(特別駅 + 乗り換え駅)リストにあるか */
     if(CONSTRAINT_STATION_KEYS.has(startNodeStationKey)){

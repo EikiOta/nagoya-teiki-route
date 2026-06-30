@@ -1,7 +1,8 @@
 import type { currentPathState } from "../types/currentPathState";
 import stations from "../data/stationNodes";
 import { isTransferred, getPrevStationKey } from "./graphUtils";
-
+import convertFareSection from "./fareSection";
+import { calcAdjacencyNodeDist } from "./findShortestRoutes";
 /* 
 名古屋市営地下鉄定期ルート条件
 1. 路線図内で一筆書き 2. 乗り換え3回まで 3. 特定の駅（大曽根、金山、西高蔵、国際センター、吹上）と乗り換え駅の総数が5を超えない
@@ -11,18 +12,29 @@ import { isTransferred, getPrevStationKey } from "./graphUtils";
 export const SPECIAL_STATION_KEYS = new Set<string>(["ozone", "kanayama", "nishitakakura", "kokusai_center", "fukiage"]);
 export const TRANSFER_STATION_KEYS = new Set<string>(["kanayama", "nagoya", "fushimi", "sakae", "imaike", "motoyama", "heiandori", "kamimaezu", "hisaya_odori", "yagoto", "aratamabashi", "marunouchi", "gokiso"]);
 export const CONSTRAINT_STATION_KEYS = new Set([...SPECIAL_STATION_KEYS, ...TRANSFER_STATION_KEYS]);
-/* 条件を満たしてるかbooleanで判定する関数。 一筆書き -> 乗り換え(あれば) -> 特定駅数 の順番*/
-export const isFulfilledCandidateRules = (currentPathState: currentPathState, nextNodeId: string): boolean => {
+/* 条件を満たしてるかbooleanで判定する関数。 一筆書き -> ユーザの許容区間内-> 乗り換え(あれば) -> 特定駅数 の順番*/
+export const isFulfilledCandidateRules = (currentPathState: currentPathState, nextNodeId: string, maxFareSection: number): boolean => {
 
-    /* nextNodeIdは既存のルート配列(routeNodeIds)にあるか？(ガード節) */
+    /* nextNodeIdは既存のルート配列(routeNodeIds)にあるか？(一筆書き判定) */
     if(currentPathState.routeNodesIds.includes(nextNodeId)){
         return false;// あった場合はアウト
     }
-    const nextStationKey:string = stations.find((node) => node.id == nextNodeId)!.stationKey;// nodeIdからstationKeyに変換
+
+
+    const prevNodeId = currentPathState.routeNodesIds.at(-1);// 末尾が一つ前のnode
+    if(prevNodeId == undefined){
+        return false;// HACK: 異常も同列扱いしてfalseにしているが、本来はエラー扱いがいい気がする
+    }
+    const distPrevToNext = calcAdjacencyNodeDist(prevNodeId, nextNodeId);
+    /* 追加後ユーザが指定した許容区間内に収まるか？ */
+    if(convertFareSection(currentPathState.distanceMeters + distPrevToNext) > maxFareSection ){
+        /* 許容区間を超えた場合 */
+        return false;
+    }
     
 
-
-
+    const nextStationKey:string = stations.find((node) => node.id == nextNodeId)!.stationKey;// nodeIdからstationKeyに変換
+    
     /* nextNodeIdのstationKeyはusedStationKeysの中にあるか？-> true: ただの乗り換えか判定, false: 一筆書きは満たしている */
     if(currentPathState.usedStationKeys.has(nextStationKey)){
         /* currentPathStateから直前(prevNode)のstationKeyを取得 */

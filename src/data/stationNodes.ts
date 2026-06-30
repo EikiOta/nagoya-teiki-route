@@ -94,7 +94,7 @@ export const stations: Station[] = [
   { id: "S03", name: "国際センター", line_id: "S", stationKey: "kokusai_center" },
   { id: "S04", name: "丸の内", line_id: "S", stationKey: "marunouchi" },
   { id: "S05", name: "久屋大通", line_id: "S", stationKey: "hisaya_odori" },
-  { id: "S06", name: "高丘", line_id: "S", stationKey: "takaoka" },
+  { id: "S06", name: "高岳", line_id: "S", stationKey: "takaoka" },
   { id: "S07", name: "車道", line_id: "S", stationKey: "kurumamichi" },
   { id: "S08", name: "今池", line_id: "S", stationKey: "imaike" },
   { id: "S09", name: "吹上", line_id: "S", stationKey: "fukiage" },

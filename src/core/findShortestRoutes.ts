@@ -203,7 +203,7 @@ export const calcDistance = (pathArr: string[]): number =>  {
   return totalDistance;
 }
 /* 隣接するノード間の距離を取得する関数 */
-export const calcAdjacencyNodeDist = (node1: string, node2: string) => {
+export const calcAdjacencyNodeDist = (node1: string, node2: string):number => {
   /* node1は端点じゃない可能性が高い */
   const node1AdjacencyObj = adjacencyList[node1];
   return node1AdjacencyObj.find((node) => (node.node_id == node2))!.distance;// 隣接ノードの距離を取得して返却
