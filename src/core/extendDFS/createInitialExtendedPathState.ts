@@ -1,8 +1,8 @@
 /* ２段階目両端拡張DFSの初期化にまつわるファイル */
 
-import type { ExtendedPathState } from "../types/extendedPathState";// 2段階目のルート状態(currentPathStateの拡張版)
-import type { currentPathState } from "../types/currentPathState";
-import convertFareSection from "./fareSection";
+import type { ExtendedPathState } from "../../types/extendedPathState";// 2段階目のルート状態(currentPathStateの拡張版)
+import type { currentPathState } from "../../types/currentPathState";
+import convertFareSection from "../fareSection";
 import { convertStationKeysToBits } from "./stationBitUtils";
 
 

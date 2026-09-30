@@ -10,7 +10,7 @@ import { CONSTRAINT_STATION_KEYS } from "./routeCandidateRules";
 export const routeCandidateFinder = (startNodeId: string, endNodeId: string, maxFareSection: number) => {
     const candidateRouteList: candidateRouteList = [];
     const initialCurrentPathState: currentPathState = initializePathState(startNodeId);// startNode入れたpathState取得
-    const recursiveDFS = (currentPathState: currentPathState,) => {
+    const recursiveDFS = (currentPathState: currentPathState) => {
 
         const prevNodeId = currentPathState.routeNodesIds.at(-1);// 末尾が一つ前のnode
         /* type narrowing */

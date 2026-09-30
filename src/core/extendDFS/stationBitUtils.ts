@@ -1,5 +1,5 @@
 /* ビット列に関するファイル */
-import stations from "../data/stationNodes";
+import stations from "../../data/stationNodes";
 /* stationKeys -> bitIndexを生成する関数(起動時１回のみ読み込み想定) */
 export const createIndexBitsMap = () => {
     const bitIndexMap = new Map<string, number>();// stationKeys(ex: "fukiage")がキー, 値はbitの位置(0-indexed)
